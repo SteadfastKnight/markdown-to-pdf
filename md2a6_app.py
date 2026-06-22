@@ -51,6 +51,14 @@ def title_from_md(md_text, fallback):
     return title or fallback
 
 
+# trimmed page size per layout, for the suggested file name
+SIZE_LABEL = {1: "A4", 2: "A5", 4: "A6"}
+
+
+def default_out_name(title, per_sheet):
+    return f"{title} - {SIZE_LABEL[per_sheet]} {per_sheet}up.pdf"
+
+
 def _css(font):
     reg, bold, size = font["reg"], font["bold"], font["size"]
     return f"""
@@ -165,14 +173,22 @@ def run_gui():
     out_var = tk.StringVar()
     status = tk.StringVar(value="Select a Markdown file to begin.")
 
-    def suggest_out():
+    last_suggest = {"val": ""}  # so we only auto-update an unedited field
+
+    def suggest_out(*_):
         try:
             md = md_var.get()
             if not md:
                 return
+            # don't clobber a path the user typed/picked themselves
+            if out_var.get() and out_var.get() != last_suggest["val"]:
+                return
             txt = pathlib.Path(md).read_text(encoding="utf-8")
             title = title_from_md(txt, pathlib.Path(md).stem)
-            out_var.set(str(pathlib.Path(md).parent / f"{title} - A6 4up.pdf"))
+            per = PER_OPTIONS[per_var.get()]
+            new = str(pathlib.Path(md).parent / default_out_name(title, per))
+            out_var.set(new)
+            last_suggest["val"] = new
         except Exception:
             pass
 
@@ -243,8 +259,10 @@ def run_gui():
                  width=46).grid(row=1, column=1, sticky="w", **pad)
 
     ttk.Label(frm, text="Pages per sheet").grid(row=2, column=0, sticky="w", **pad)
-    ttk.Combobox(frm, textvariable=per_var, values=list(PER_OPTIONS), state="readonly",
-                 width=46).grid(row=2, column=1, sticky="w", **pad)
+    per_cb = ttk.Combobox(frm, textvariable=per_var, values=list(PER_OPTIONS),
+                          state="readonly", width=46)
+    per_cb.grid(row=2, column=1, sticky="w", **pad)
+    per_cb.bind("<<ComboboxSelected>>", suggest_out)
 
     ttk.Label(frm, text="Save PDF as").grid(row=3, column=0, sticky="w", **pad)
     ttk.Entry(frm, textvariable=out_var, width=48).grid(row=3, column=1, **pad)
@@ -273,7 +291,7 @@ def run_cli(argv):
     else:
         txt = pathlib.Path(md).read_text(encoding="utf-8")
         title = title_from_md(txt, pathlib.Path(md).stem)
-        out = str(pathlib.Path(md).parent / f"{title} - A6 {per}up.pdf")
+        out = str(pathlib.Path(md).parent / default_out_name(title, per))
     sheets, w, h = generate(md, font_key, out, per)
     print(f"OK -> {out}  ({sheets} sheets, {per}-up, {w:.0f}x{h:.0f} mm, font: {font_key})")
     return 0

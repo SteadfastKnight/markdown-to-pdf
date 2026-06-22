@@ -78,13 +78,13 @@ opens the GUI**.
 **Examples**
 ```sh
 # defaults: EB Garamond, 4-up, auto-named output
-"MD-to-A6 Booklet.exe" example.md
+"MD-to-A6 Booklet.exe" notes.md
 
 # Lora, two A5 pages per sheet, explicit output
-"MD-to-A6 Booklet.exe" example.md "Lora (modern serif)" booklet.pdf 2
+"MD-to-A6 Booklet.exe" notes.md "Lora (modern serif)" booklet.pdf 2
 
 # run from source instead of the exe
-python md2a6_app.py example.md "Source Sans (clean sans)" out.pdf 1
+python md2a6_app.py notes.md "Source Sans (clean sans)" out.pdf 1
 ```
 
 > **Note:** the bundled exe is built `--windowed`, so in CLI mode it runs but
@@ -101,8 +101,8 @@ Requires Python 3.9+.
 
 ```sh
 pip install -r requirements.txt
-python md2a6_app.py            # GUI
-python md2a6_app.py example.md # CLI
+python md2a6_app.py          # GUI
+python md2a6_app.py notes.md # CLI
 ```
 
 Runtime dependencies: `pymupdf`, `markdown` (see `requirements.txt`).
@@ -174,4 +174,4 @@ Bundled fonts are under the [SIL Open Font License](https://scripts.sil.org/OFL)
 - **Lora** — Cyreal
 - **Source Sans 3** — Adobe
 
-All cover the Romanian Latin Extended characters used in the sample.
+All cover the Romanian Latin Extended characters (ș ț ă î â, „ " quotes).
