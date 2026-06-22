@@ -1,0 +1,14 @@
+# PyInstaller scratch
+build_pyi/
+build/
+*.spec
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Generated output PDFs (keep example.md, not its renders)
+*.pdf
+!dist/*.exe
