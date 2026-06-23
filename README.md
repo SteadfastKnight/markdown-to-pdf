@@ -8,6 +8,8 @@ Built for printing devotionals/notes as small booklet pages, but works for any
 Markdown. Fully **self-contained**: no browser, no network, no system fonts
 required — rendering is done in-process and three fonts are bundled.
 
+![MD-to-PDF Booklet — the app window](docs/screenshot.png)
+
 A **Java 21 + JavaFX** application. The pipeline is pure JVM:
 
 | Stage | Library |
