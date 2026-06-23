@@ -1,0 +1,203 @@
+/* ============================================================================
+   MD-to-PDF Booklet -- "print studio" theme.
+   Warm paper + ink + printer's vermilion, set in the app's own bundled book
+   fonts (EB Garamond display, Lora text). Thin rules echo the sheet cut lines.
+   ============================================================================ */
+
+.root {
+    -paper:          #f4efe4;
+    -paper-deep:     #ece2d0;
+    -ink:            #211b16;
+    -ink-soft:       #6b6253;
+    -rule:           #d8ccb4;
+    -accent:         #b1442f;
+    -desk:           #272014;
+    -desk-soft:      #ffffff22;
+    -paper-on-desk:  #e7ddca;
+    -ok:             #3f6b3a;
+
+    -fx-font-family: "Lora";
+    -fx-font-smoothing-type: gray;
+}
+
+/* ---- panels --------------------------------------------------------------- */
+.form-pane {
+    -fx-background-color: linear-gradient(to bottom right, -paper, -paper-deep);
+}
+.desk-pane {
+    -fx-background-color:
+        radial-gradient(radius 130%, #38301d, -desk),
+        linear-gradient(to bottom, #322a18 0%, transparent 55%);
+}
+
+/* ---- type ----------------------------------------------------------------- */
+.overline {
+    -fx-font-family: "Lora";
+    -fx-font-size: 10.5px;
+    -fx-text-fill: -accent;
+}
+.title {
+    -fx-font-family: "EB Garamond";
+    -fx-font-weight: bold;
+    -fx-font-size: 33px;
+    -fx-text-fill: -ink;
+}
+.subtitle {
+    -fx-font-family: "Lora";
+    -fx-font-style: italic;
+    -fx-font-size: 13px;
+    -fx-text-fill: -ink-soft;
+}
+.field-label {
+    -fx-font-family: "Lora";
+    -fx-font-size: 11px;
+    -fx-text-fill: -ink-soft;
+}
+
+/* ---- thin rule ------------------------------------------------------------ */
+.rule { -fx-background-color: -rule; -fx-min-height: 1; -fx-pref-height: 1; }
+.rule-accent { -fx-background-color: -accent; -fx-min-height: 2; -fx-pref-height: 2; }
+
+/* ---- text inputs (editorial underline) ------------------------------------ */
+.text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: -rule;
+    -fx-border-width: 0 0 1.2 0;
+    -fx-text-fill: -ink;
+    -fx-font-size: 13.5px;
+    -fx-padding: 7 2 7 2;
+    -fx-prompt-text-fill: derive(-ink-soft, 35%);
+}
+.text-field:focused { -fx-border-color: -accent; }
+
+/* ---- combo boxes ---------------------------------------------------------- */
+.combo-box {
+    -fx-background-color: -paper-deep;
+    -fx-background-radius: 0;
+    -fx-border-color: -rule;
+    -fx-border-width: 1;
+    -fx-padding: 1 2;
+}
+.combo-box:focused { -fx-border-color: -accent; }
+.combo-box .list-cell {
+    -fx-text-fill: -ink;
+    -fx-font-size: 13px;
+    -fx-padding: 6 8;
+    -fx-background-color: transparent;
+}
+.combo-box .arrow, .combo-box .arrow-button { -fx-background-color: transparent; }
+.combo-box .arrow { -fx-background-color: -ink-soft; }
+.combo-box-popup .list-view {
+    -fx-background-color: -paper;
+    -fx-border-color: -ink;
+    -fx-border-width: 1;
+}
+.combo-box-popup .list-view .list-cell { -fx-text-fill: -ink; -fx-padding: 7 10; }
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: -accent;
+    -fx-text-fill: -paper;
+}
+.combo-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: derive(-accent, 18%);
+    -fx-text-fill: -paper;
+}
+
+/* ---- buttons -------------------------------------------------------------- */
+.browse-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: -ink;
+    -fx-border-width: 1.2;
+    -fx-text-fill: -ink;
+    -fx-font-family: "Lora";
+    -fx-font-size: 12px;
+    -fx-padding: 7 15;
+    -fx-cursor: hand;
+}
+.browse-btn:hover { -fx-background-color: -ink; -fx-text-fill: -paper; }
+
+.generate-btn {
+    -fx-background-color: -ink;
+    -fx-background-radius: 0;
+    -fx-text-fill: -paper;
+    -fx-font-family: "EB Garamond";
+    -fx-font-weight: bold;
+    -fx-font-size: 17px;
+    -fx-padding: 13 34;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(33,27,22,0.28), 9, 0.0, 0, 3);
+}
+.generate-btn:hover { -fx-background-color: -accent; }
+.generate-btn:disabled { -fx-opacity: 0.45; -fx-cursor: default; }
+
+/* ---- status --------------------------------------------------------------- */
+.status        { -fx-font-style: italic; -fx-font-size: 12.5px; -fx-text-fill: -ink-soft; }
+.status-error  { -fx-text-fill: -accent; }
+.status-ok     { -fx-text-fill: -ok; }
+
+/* ---- desk side ------------------------------------------------------------ */
+.desk-caption  { -fx-font-family: "Lora"; -fx-font-size: 10.5px; -fx-text-fill: -paper-on-desk; }
+.desk-note     { -fx-font-family: "EB Garamond"; -fx-font-size: 16px; -fx-text-fill: -paper-on-desk; }
+.desk-sub      { -fx-font-family: "Lora"; -fx-font-style: italic; -fx-font-size: 11.5px; -fx-text-fill: #b6ab93; }
+
+/* ---- custom window chrome -------------------------------------------------- */
+.app-frame { -fx-border-color: #15110c; -fx-border-width: 1; }
+
+.titlebar {
+    -fx-background-color: linear-gradient(to bottom, #322a18, -desk);
+    -fx-padding: 0 4 0 12;
+    -fx-alignment: center-left;
+}
+.titlebar-title {
+    -fx-font-family: "Lora";
+    -fx-font-size: 12px;
+    -fx-text-fill: -paper-on-desk;
+}
+.win-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-text-fill: -paper-on-desk;
+    -fx-font-family: "Lora";
+    -fx-font-size: 14px;
+    -fx-min-width: 44; -fx-min-height: 34;
+    -fx-cursor: hand;
+}
+.win-btn:hover  { -fx-background-color: #ffffff22; }
+.win-close:hover { -fx-background-color: -accent; -fx-text-fill: -paper; }
+
+/* ---- themed dialog --------------------------------------------------------- */
+.dialog-card {
+    -fx-background-color: linear-gradient(to bottom right, -paper, -paper-deep);
+    -fx-background-radius: 4;
+    -fx-border-color: -ink;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(20,16,10,0.45), 26, 0.2, 0, 10);
+}
+.dialog-title { -fx-font-family: "EB Garamond"; -fx-font-weight: bold; -fx-font-size: 22px; -fx-text-fill: -ink; }
+.dialog-msg   { -fx-font-family: "Lora"; -fx-font-size: 13px; -fx-text-fill: -ink-soft; }
+.dialog-error .dialog-title { -fx-text-fill: -accent; }
+
+.dialog-btn-primary {
+    -fx-background-color: -ink;
+    -fx-background-radius: 0;
+    -fx-text-fill: -paper;
+    -fx-font-family: "EB Garamond";
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 9 22;
+    -fx-cursor: hand;
+}
+.dialog-btn-primary:hover { -fx-background-color: -accent; }
+.dialog-btn-secondary {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: -ink;
+    -fx-border-width: 1.2;
+    -fx-text-fill: -ink;
+    -fx-font-family: "Lora";
+    -fx-font-size: 13px;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+}
+.dialog-btn-secondary:hover { -fx-background-color: -ink; -fx-text-fill: -paper; }

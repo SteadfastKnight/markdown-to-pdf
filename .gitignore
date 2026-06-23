@@ -1,9 +1,19 @@
-# PyInstaller scratch
+# --- Java / Maven ---
+target/
+dist/
+*.class
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+
+# --- PyInstaller scratch (legacy) ---
 build_pyi/
 build/
 *.spec
 
-# Python
+# --- Python (legacy) ---
 __pycache__/
 *.pyc
 .venv/
@@ -11,4 +21,4 @@ venv/
 
 # Generated output PDFs (keep example.md, not its renders)
 *.pdf
-!dist/*.exe
+!legacy/*.exe

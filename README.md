@@ -1,4 +1,4 @@
-# markdown-to-pdf
+# markdown-to-pdf · MD-to-PDF Booklet
 
 Turn a Markdown file into a **print-ready booklet PDF** — multiple small pages
 imposed on A4 sheets, with cut lines and page numbers, ready to print, cut, and
@@ -6,11 +6,21 @@ slot into a notebook.
 
 Built for printing devotionals/notes as small booklet pages, but works for any
 Markdown. Fully **self-contained**: no browser, no network, no system fonts
-required — rendering is done in-process with [PyMuPDF](https://pymupdf.readthedocs.io/)
-and the [`markdown`](https://python-markdown.github.io/) library, and three
-fonts are bundled.
+required — rendering is done in-process and three fonts are bundled.
 
-![pages per sheet: 1 / 2 / 4](https://img.shields.io/badge/layouts-1%20%7C%202%20%7C%204%20up-blue)
+![MD-to-PDF Booklet — the app window](docs/screenshot.png)
+
+A **Java 21 + JavaFX** application. The pipeline is pure JVM:
+
+| Stage | Library |
+|-------|---------|
+| Markdown → HTML | [flexmark-java](https://github.com/vsch/flexmark-java) |
+| HTML + CSS → A6 PDF | [openhtmltopdf](https://github.com/danfickle/openhtmltopdf) |
+| N-up imposition (cut lines, page numbers) | [Apache PDFBox](https://pdfbox.apache.org/) |
+| UI | JavaFX |
+
+> The original Python/PyMuPDF implementation is kept for reference under
+> [`legacy/`](legacy/) (run `python legacy/md2a6_app.py`).
 
 ---
 
@@ -35,22 +45,51 @@ Every layout includes:
 
 ---
 
-## Quick start (no install)
+## Requirements
 
-Double-click **`dist/MD-to-A6 Booklet.exe`** (Windows, ~36 MB, portable — copy it
-anywhere).
-
-1. **Markdown file** — choose your `.md`
-2. **Font** — pick one of three
-3. **Pages per sheet** — `1`, `2`, or `4`
-4. **Save PDF as** — defaults to `<title> - A6 <N>up.pdf` next to the input
-5. **Generate**
+- **JDK 21** (e.g. [Temurin 21](https://adoptium.net/)). Provides `java` and
+  `jpackage`.
+- **Maven** — none needed globally; the project ships the **Maven Wrapper**
+  (`./mvnw`), which provisions the pinned Maven version automatically.
 
 The output filename's title is taken from the **first line** of the Markdown
 file (leading `#` stripped).
 
-> First launch may trigger a Windows SmartScreen warning (unsigned binary) —
-> *More info → Run anyway*.
+---
+
+## Build a portable app (no Java install needed by end users)
+
+```sh
+./mvnw -Pdist package
+```
+
+This produces a **self-contained app-image** under
+`target/dist/MD-to-PDF Booklet/` — a portable folder bundling a trimmed Java
+runtime + JavaFX + the fonts (~80 MB, no separate Java install required). Copy it
+anywhere and run `MD-to-PDF Booklet.exe`.
+
+> The app-image is per-OS — build it on each platform you want to ship.
+
+### Use it
+1. **Source file** — choose your `.md`
+2. **Typeface** — pick one of three
+3. **Layout** — `4`, `2`, or `1` per sheet (the live preview shows the imposition)
+4. **Save as** — defaults to `<title> - A6 <N>up.pdf` next to the input
+5. **Generate**
+
+---
+
+## Run / develop from source
+
+```sh
+./mvnw package                      # builds the runnable fat jar
+java -jar "target/app/md2pdf.jar"   # GUI
+java -jar "target/app/md2pdf.jar" sample.md   # CLI
+```
+
+`target/app/md2pdf.jar` is a shaded jar with everything (incl. JavaFX) bundled,
+launched through a non-`Application` `Launcher` class so JavaFX starts cleanly
+from the classpath.
 
 ---
 
@@ -60,7 +99,7 @@ Passing arguments runs the program in command-line mode; with **no arguments it
 opens the GUI**.
 
 ```
-"MD-to-A6 Booklet.exe" <file.md> [font-key] [out.pdf] [per-sheet:1|2|4]
+md2pdf.jar <file.md> [font-key] [out.pdf] [per-sheet:1|2|4]
 ```
 
 | Argument     | Required | Default                                        |
@@ -78,81 +117,35 @@ opens the GUI**.
 **Examples**
 ```sh
 # defaults: EB Garamond, 4-up, auto-named output
-"MD-to-A6 Booklet.exe" notes.md
+java -jar "target/app/md2pdf.jar" notes.md
 
 # Lora, two A5 pages per sheet, explicit output
-"MD-to-A6 Booklet.exe" notes.md "Lora (modern serif)" booklet.pdf 2
+java -jar "target/app/md2pdf.jar" notes.md "Lora (modern serif)" booklet.pdf 2
 
-# run from source instead of the exe
-python md2a6_app.py notes.md "Source Sans (clean sans)" out.pdf 1
+# the packaged app works the same in CLI mode
+"target/dist/MD-to-PDF Booklet/MD-to-PDF Booklet.exe" notes.md "Source Sans (clean sans)" out.pdf 1
 ```
-
-> **Note:** the bundled exe is built `--windowed`, so in CLI mode it runs but
-> prints nothing to the console and returns immediately — check for the output
-> PDF rather than terminal text. Running from source (`python md2a6_app.py …`)
-> prints normally. To get a console-mode exe, drop `--windowed` from the build
-> command below.
 
 ---
 
-## Run / develop from source
+## Adding more fonts
 
-Requires Python 3.9+.
-
-```sh
-pip install -r requirements.txt
-python md2a6_app.py          # GUI
-python md2a6_app.py notes.md # CLI
-```
-
-Runtime dependencies: `pymupdf`, `markdown` (see `requirements.txt`).
-
-### Adding more fonts
-
-1. Drop static `Name-Regular.ttf` and `Name-Bold.ttf` into `fonts/`.
-2. Add one line to the `FONTS` dict at the top of `md2a6_app.py`:
-   ```python
-   "My Font (label)": dict(reg="Name-Regular.ttf", bold="Name-Bold.ttf", size=7.8),
+1. Drop static `Name-Regular.ttf` and `Name-Bold.ttf` into
+   `src/main/resources/fonts/`.
+2. Add one line to the `FONTS` map in
+   `src/main/java/com/steadfastknight/md2pdf/FontRegistry.java`:
+   ```java
+   FONTS.put("My Font (label)", new Font("Name-Regular.ttf", "Name-Bold.ttf", 7.8));
    ```
-   `size` is the body point size (headings scale from it). Tune per font.
-
-Variable fonts won't apply bold in PyMuPDF — instantiate static weights first:
-```python
-from fontTools.ttLib import TTFont
-from fontTools.varLib.instancer import instantiateVariableFont
-for style, wght in (("Regular", 400), ("Bold", 700)):
-    f = TTFont("MyFont[wght].ttf")
-    instantiateVariableFont(f, {"wght": wght}, inplace=True)
-    f.save(f"MyFont-{style}.ttf")
-```
-
----
-
-## Regenerating the .exe
-
-The exe is built with [PyInstaller](https://pyinstaller.org/). From this folder:
-
-```powershell
-pip install pyinstaller
-pyinstaller --onefile --windowed --add-data "fonts;fonts" `
-  --name "MD-to-A6 Booklet" --distpath dist `
-  --workpath build_pyi --specpath build_pyi `
-  md2a6_app.py
-```
-
-- `--onefile` — single portable exe
-- `--windowed` — no console window for the GUI (remove for a console/CLI build)
-- `--add-data "fonts;fonts"` — bundles the font folder (use `fonts:fonts` with a
-  `:` separator on macOS/Linux)
-
-The result is `dist/MD-to-A6 Booklet.exe`. `build_pyi/` is scratch and can be
-deleted (it's git-ignored).
+   The size is the body point size (headings scale from it). Tune per font.
 
 ---
 
 ## Layout / tuning reference
 
-Constants live at the top of `md2a6_app.py`:
+Constants live in
+`src/main/java/com/steadfastknight/md2pdf/Layout.java` (and font sizes in
+`FontRegistry.java`):
 
 | Constant            | Meaning                                      | Default        |
 |---------------------|----------------------------------------------|----------------|
@@ -161,7 +154,9 @@ Constants live at the top of `md2a6_app.py`:
 | `EDGE`              | safety inset from A4 sheet edge              | 1 mm           |
 | `GUTTER`            | gap between cells                            | 0 mm           |
 | `LAYOUTS`           | pages-per-sheet → (cols, rows, rotation)     | 1/2/4          |
-| `FONTS[..]["size"]` | per-font body point size                     | 7.5–8.4 pt     |
+| `Font.size`         | per-font body point size                     | 7.5–8.4 pt     |
+
+The page CSS (justification, heading scale, A6 `@page` box) is built in `Css.java`.
 
 ---
 
